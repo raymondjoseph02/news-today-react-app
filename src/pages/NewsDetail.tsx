@@ -5,6 +5,7 @@ import { Archive, Heart, MessageSquare, Share2 } from "lucide-react";
 import { type ArticleProps } from "../types/types";
 import { fetchNews } from "../lib/news";
 import RelatedArticleCard from "../components/news-feeds/RelatedArticleCard";
+import Comments from "../components/ui/Comments";
 // import fallBackImage from "/images/freepik__adjust__20029.jpeg";
 
 function NewsDetail() {
@@ -242,11 +243,9 @@ function NewsDetail() {
           </div>
 
           {/* Comments Section */}
-          <div className="my-6">
-            <p className="font-semibold text-lg sm:text-2xl">Comments (2)</p>
-            <div className="mt-4 text-gray-500">
-              Comments section coming soon...
-            </div>
+          <div className="my-8">
+            <h2 className="font-semibold text-lg sm:text-2xl mb-6">Comments (2)</h2>
+            <Comments articleId={slug} />
           </div>
         </div>
       </article>
