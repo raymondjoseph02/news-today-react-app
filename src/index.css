@@ -1,0 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap");
+@import "tailwindcss";
+@theme {
+  --color-blue-300: #1173d4;
+
+  --color-gray-50: #f6f7f8;
+  --color-gray-150: #f3f4f6;
+  --color-gray-100: #333d4d;
+  --color-gray-200: #eaedf2;
+  --color-gray-800: #0f172a;
+
+  --color-organ-50: #fbeee1;
+  --color-organ-100: #f9d4b5;
+}
+body {
+  font-family: "EB Garamond", serif;
+}
+
+/* give the site a max-width in any screen above 1440px  */
+.container {
+  @apply mx-auto xl:max-w-7xl px-6 lg:px-10 xl:px-0;
+}
+
+.container-wrapper {
+  @apply mx-auto max-w-5xl px-6 lg:px-10 xl:px-0;
+}
