@@ -1,5 +1,3 @@
-// src/lib/news.ts
-import axios from "axios";
 import { type DataProps } from "../types/types";
 
 export interface NewsParams {
@@ -8,90 +6,134 @@ export interface NewsParams {
   pageSize?: number;
 }
 
+// WARNING: Client-side API keys are still visible to users in browser dev tools
+// For production applications, implement a backend proxy to keep API keys secure
 const API_KEY = import.meta.env.VITE_NEWS_API_KEY; // For Vite
 // const API_KEY = process.env.REACT_APP_NEWS_API_KEY; // For CRA
 
 export async function fetchNews(params: NewsParams = {}): Promise<DataProps> {
-  const { category = "general", search = "", pageSize = 20 } = params;
+  const { category = "general", search = "", pageSize = 10 } = params;
 
   if (!API_KEY) {
     throw new Error(
-      "News API key missing. Please add VITE_NEWS_API_KEY to your .env file"
+      "NewsData API key missing. Please add VITE_NEWS_API_KEY to your .env file"
     );
   }
 
   let url: string;
+  const baseUrl = "https://newsdata.io/api/1/latest";
 
-  // If there's a search query, use /everything endpoint
+  // Start with base URL (no API key in URL for security)
+  url = baseUrl + "?";
+
+  // Add search query if provided
   if (search && search.trim() !== "") {
-    const baseUrl = "https://newsapi.org/v2/everything";
-    url = `${baseUrl}?q=${encodeURIComponent(
-      search.trim()
-    )}&pageSize=${pageSize}`;
-  } else {
-    // For categories, use /top-headlines endpoint
-    const baseUrl = "https://newsapi.org/v2/top-headlines";
-    url = `${baseUrl}?country=us&pageSize=${pageSize}`;
+    url += `q=${encodeURIComponent(search.trim())}&`;
+  }
 
-    // Add category if it's not "all" or "general"
-    if (category && category !== "all" && category !== "general") {
-      const validCategories = [
-        "business",
-        "entertainment",
-        "health",
-        "science",
-        "sports",
-        "technology",
-      ];
+  // Add country filter (US news)
+  url += "country=us&";
 
-      const validCategory = validCategories.includes(category.toLowerCase())
-        ? category.toLowerCase()
-        : null;
+  // Add language filter (English)
+  url += "language=en";
 
-      if (validCategory) {
-        url += `&category=${validCategory}`;
-      }
+  // Add category if it's not "all" or "general"
+  if (category && category !== "all" && category !== "general") {
+    const validCategories = [
+      "business",
+      "entertainment",
+      "health",
+      "science",
+      "sports",
+      "technology",
+      "politics",
+    ];
+
+    const validCategory = validCategories.includes(category.toLowerCase())
+      ? category.toLowerCase()
+      : null;
+
+    if (validCategory) {
+      url += `&category=${validCategory}`;
     }
   }
 
+  // Add page size limit (free tier gets max 10 articles)
+  if (pageSize && pageSize <= 10) {
+    url += `&size=${pageSize}`;
+  }
+
   try {
+    // SECURITY: Try header-based authentication first (keeps API key out of URL)
+    // This approach is more secure as headers are not logged in browser history
     const response = await fetch(url, {
       headers: {
         "User-Agent": "NewsToday/1.0",
-        "X-API-Key": API_KEY,
+        "X-ACCESS-KEY": API_KEY, // Try custom header first
+        "Authorization": `Bearer ${API_KEY}`, // Alternative header method
       },
     });
+
+    // If header authentication fails, fall back to URL parameter method
+    // NOTE: This exposes the API key in the URL which is less secure
+    if (!response.ok && (response.status === 401 || response.status === 403)) {
+      console.warn("Header authentication failed, trying URL parameter method...");
+      const fallbackUrl = url.includes('?') 
+        ? `${url}&apikey=${API_KEY}` 
+        : `${url}?apikey=${API_KEY}`;
+      
+      const fallbackResponse = await fetch(fallbackUrl, {
+        headers: {
+          "User-Agent": "NewsToday/1.0",
+        },
+      });
+
+      if (!fallbackResponse.ok) {
+        throw new Error(`HTTP error! status: ${fallbackResponse.status}`);
+      }
+
+      const data = await fallbackResponse.json();
+      return processApiResponse(data);
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
-
-    if (data.status === "error") {
-      throw new Error(data.message || "News API error");
-    }
-
-    // Transform the API response to match our data structure
-    return {
-      status: data.status,
-      totalResults: data.totalResults || 0,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      articles: (data.articles || []).map((article: any) => ({
-        title: article.title,
-        description: article.description,
-        publishedAt: article.publishedAt,
-        urlToImage: article.urlToImage,
-        url: article.url,
-        source: article.source,
-        author: article.author,
-        content: article.content,
-      })),
-    };
+    return processApiResponse(data);
   } catch (error) {
     console.error("Error fetching news:", error);
     throw error;
   }
+}
+
+// Helper function to process API response consistently
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function processApiResponse(data: any): DataProps {
+  if (data.status === "error") {
+    throw new Error(data.message || "NewsData API error");
+  }
+
+  // Transform NewsData.io API response to match our data structure
+  return {
+    status: data.status,
+    totalResults: data.totalResults || 0,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    articles: (data.results || []).map((article: any) => ({
+      title: article.title,
+      description: article.description,
+      publishedAt: article.pubDate,
+      urlToImage: article.image_url,
+      url: article.link,
+      source: {
+        id: article.source_id,
+        name: article.source_name || article.source_id,
+      },
+      author: article.creator ? article.creator.join(", ") : null,
+      content: article.content,
+    })),
+  };
 }
 
 // Utility function to get cached or fresh news data
@@ -126,14 +168,3 @@ export async function getCachedNews(
   cache.set(cacheKey, { data, timestamp: Date.now() });
   return data;
 }
-
-export const testEndpoint = async () => {
-  try {
-    const res = await axios.get(
-      "https://newsdata.io/api/1/latest?apikey=pub_cf652e0a3bfe4992b3a11af81553b7eb&country=au,us"
-    );
-    console.log(res);
-  } catch (error) {
-    console.log(error);
-  }
-};

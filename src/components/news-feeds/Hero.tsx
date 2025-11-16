@@ -13,7 +13,6 @@ import {
 } from "../../store";
 import ArticleSkeleton from "../ui/skeleton/ArticleSkeleton";
 import type { ArticleProps, HeroProps } from "../../types/types";
-import { testEndpoint } from "../../lib/news";
 
 function Hero({ data, isLoading, error }: HeroProps) {
   const navigate = useNavigate();
@@ -32,8 +31,6 @@ function Hero({ data, isLoading, error }: HeroProps) {
     []
   );
 
-  testEndpoint();
-
   const currentTab = useStore(activeTab);
   const currentSearch = useStore(search);
 
@@ -41,8 +38,8 @@ function Hero({ data, isLoading, error }: HeroProps) {
   const tabToCategoryMapping = useMemo(
     () => ({
       all: "general",
-      top: "top stories",
-      world: "world",
+      top: "general",
+      world: "general",
       politics: "politics",
       business: "business",
       tech: "technology",
