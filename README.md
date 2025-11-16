@@ -1,73 +1,76 @@
-# React + TypeScript + Vite
+# News Today
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive news aggregation web application built with React and TypeScript that delivers real-time news from multiple sources with a focus on performance and user experience.
 
-Currently, two official plugins are available:
+## Tech Stack & Architectural Decisions
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Core Framework
 
-## React Compiler
+- **React 19 + TypeScript**: Chose React 19 for the latest features like concurrent rendering and automatic batching, while TypeScript provides compile-time safety and better developer experience
+- **Vite 7**: Selected over Create React App for significantly faster hot module replacement (HMR) and modern ES modules support
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### State Management
 
-## Expanding the ESLint configuration
+- **TanStack React Store**: Lightweight alternative to Redux/Zustand for managing global state (active tab, search queries) - chosen for simplicity since we only need minimal global state
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Styling & UI
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Tailwind CSS 4**: Utility-first approach enables rapid prototyping and maintains design consistency without custom CSS bloat
+- **Framer Motion**: Provides smooth, performant animations for enhanced UX without the complexity of GSAP
+- **Lucide React**: Consistent icon system with tree-shaking support
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Data & API Integration
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- **NewsData.io API**: Selected over NewsAPI for better free tier limits and more reliable uptime
+- **Axios**: Robust HTTP client with better error handling and request/response interceptors than fetch
+- **Custom Hooks Pattern**: `useNews` hook abstracts data fetching logic from components for reusability and testability
+
+## Key Implementation Decisions
+
+### Component Architecture
+
+```
+src/
+├── components/
+│   ├── news-feeds/     # Domain-specific components
+│   └── ui/             # Reusable UI components
+├── hooks/              # Custom hooks for logic separation
+├── lib/                # API integration layer
+└── types/              # TypeScript definitions
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+**Why this structure?**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Separates business logic (news-feeds) from generic UI components
+- Makes components more testable and reusable
+- Clear separation of concerns between data fetching, UI, and business logic
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Performance Optimizations
+
+- **Debounced Search**: Prevents excessive API calls during user typing
+- **Loading States**: Skeleton components provide immediate visual feedback
+- **Error Boundaries**: Graceful error handling prevents app crashes
+- **Type Safety**: Comprehensive TypeScript interfaces reduce runtime errors
+
+### Security & Best Practices
+
+- **Environment Variables**: API keys stored securely in `.env` files
+- **Header-based Auth**: API keys sent in headers instead of URL parameters
+- **Input Sanitization**: All user inputs are sanitized before API requests
+
+### SEO & Social Sharing
+
+- **Open Graph Meta Tags**: Proper social media sharing with custom OG images
+- **Twitter Cards**: Enhanced Twitter sharing experience
+- **Semantic HTML**: Proper heading hierarchy and accessibility
+
+## Features
+
+- 📰 Real-time news aggregation from NewsData.io
+- 🔍 Debounced search with instant results
+- 📱 Responsive design with mobile-first approach
+- 🎯 Category-based filtering (Business, Technology, World, etc.)
+- 🔗 Individual article pages with related content
+- ⚡ Fast loading with skeleton states
+- 🎨 Smooth animations and micro-interactions
+- 🔒 Secure API key management
