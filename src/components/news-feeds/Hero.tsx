@@ -7,7 +7,6 @@ import {
   activeTab,
   handleSearch,
   resetSearch,
-  search,
   updateActiveTab,
 } from "../../store";
 import ArticleSkeleton from "../ui/skeleton/ArticleSkeleton";
