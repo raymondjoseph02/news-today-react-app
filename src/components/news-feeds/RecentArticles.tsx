@@ -5,7 +5,6 @@ import ArticleSkeleton from "../ui/skeleton/ArticleSkeleton";
 import type { RecentArticlesProps, ArticleProps } from "../../types/types";
 
 function RecentArticles({ data, isLoading, error }: RecentArticlesProps) {
-
   return (
     <section className="bg-gray-50 pb-10">
       <div className="container-wrapper space-y-6 sm:space-y-8">
@@ -60,7 +59,7 @@ function RecentArticles({ data, isLoading, error }: RecentArticlesProps) {
                   description={article.description || ""}
                   date={article.publishedAt}
                   imageUrl={article.urlToImage || ""}
-                  url={article.url}
+                  id={article.id}
                 />
               ))
           )}

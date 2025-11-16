@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import { Archive, Heart, MessageSquare, Share2 } from "lucide-react";
 import { type ArticleProps } from "../types/types";
-import { fetchNews } from "../lib/news";
+import { fetchNews, fetchArticleById } from "../lib/news";
 import RelatedArticleCard from "../components/news-feeds/RelatedArticleCard";
 import Comments from "../components/news-feeds/Comments";
 // import fallBackImage from "/images/freepik__adjust__20029.jpeg";
@@ -58,21 +58,16 @@ function NewsDetail() {
     setError(null);
 
     try {
-      // First, try to get article data from sessionStorage
-      const storedArticle = sessionStorage.getItem(`article-${slug}`);
+      // Fetch article directly by ID from NewsData.io
+      console.log("Fetching article by ID:", slug);
+      const articleResponse = await fetchArticleById(slug);
 
-      if (storedArticle) {
-        // Use stored article data
-        const articleData = JSON.parse(storedArticle);
-        setArticle(articleData);
+      if (articleResponse.articles && articleResponse.articles.length > 0) {
+        const fetchedArticle = articleResponse.articles[0];
+        setArticle(fetchedArticle);
 
-        // Fetch related articles if category is available
-        if (articleData.category) {
-          await fetchRelatedArticles(articleData.category, articleData.title);
-        }
-
-        setIsLoading(false);
-        return;
+        // Fetch related articles based on a default category or extract from article data
+        await fetchRelatedArticles("general", fetchedArticle.title);
       } else {
         setError("Article not found");
       }
@@ -164,11 +159,6 @@ function NewsDetail() {
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
               {article.description || "No description available"}
             </p>
-            {article.content && (
-              <div className="text-gray-600 leading-relaxed">
-                {article.content}
-              </div>
-            )}
           </div>
 
           {/* Article Statistics */}

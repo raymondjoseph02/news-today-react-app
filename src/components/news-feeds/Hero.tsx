@@ -34,18 +34,6 @@ function Hero({ data, isLoading, error }: HeroProps) {
   const currentTab = useStore(activeTab);
   const currentSearch = useStore(search);
 
-  // Memoize mapping object to prevent re-creation
-  const tabToCategoryMapping = useMemo(
-    () => ({
-      all: "general",
-      top: "general",
-      world: "general",
-      politics: "politics",
-      business: "business",
-      tech: "technology",
-    }),
-    []
-  );
 
   // Memoize callback functions to prevent re-renders
   const handleTabSelect = useCallback((tabName: string) => {
@@ -61,48 +49,20 @@ function Hero({ data, isLoading, error }: HeroProps) {
     return tab ? tab.name : "All";
   }, [tabs, currentTab]);
 
-  // Memoize utility functions
-  const createSlug = useCallback((title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+  // Use article ID directly (no need to create slug from title)
+  const createSlug = useCallback((id: string) => {
+    return id; // NewsData.io articles have unique IDs
   }, []);
 
-  const mapTabToCategory = useCallback(
-    (tabName: string) => {
-      return (
-        tabToCategoryMapping[
-          tabName.toLowerCase() as keyof typeof tabToCategoryMapping
-        ] || "general"
-      );
-    },
-    [tabToCategoryMapping]
-  );
 
   const handleHeroNavigate = useCallback(
     (item: ArticleProps) => {
-      const slug = createSlug(item.title);
+      const articleId = createSlug(item.id); // Use article ID instead of title
 
-      // Store article data in sessionStorage with current category
-      const articleData = {
-        title: item.title,
-        description: item.description,
-        urlToImage: item.urlToImage,
-        publishedAt: item.publishedAt,
-        url: item.url,
-        category: mapTabToCategory(currentTab),
-        author: item.author,
-        content: item.content,
-        source: item.source,
-      };
-
-      sessionStorage.setItem(`article-${slug}`, JSON.stringify(articleData));
-
-      // Navigate to the article page
-      navigate(`/news/${slug}`);
+      // Navigate directly to the article page using the article ID
+      navigate(`/news/${articleId}`);
     },
-    [createSlug, mapTabToCategory, currentTab, navigate]
+    [createSlug, navigate]
   );
 
   // Memoize search handler to prevent re-renders

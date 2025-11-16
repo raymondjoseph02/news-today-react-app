@@ -15,6 +15,7 @@ export interface ArticleProps {
   source?: ArticleSource;
   author?: string | null;
   content?: string | null;
+  id: string;
 }
 
 export interface DataProps {
