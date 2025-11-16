@@ -4,22 +4,17 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SearchBar from "./SearchBar";
 import { links } from "../../constants/constants";
-import { fetchNews } from "../../lib/news";
+import { handleSearch } from "../../store";
 
 function Nav() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [search, setSearch] = useState<string | null>(null);
 
-  // Search handler
-  const handleSearchChange = (val: string) => {
-    setSearch(val);
+  useEffect(() => {
     if (search) {
-      fetchNews({
-        search: search,
-      });
+      handleSearch(search);
     }
-  };
-
+  }, [search]);
   // Toggle mobile menu
   const handleToggleMenu = () => {
     setIsMobileMenuOpen((prev) => !prev);
@@ -74,10 +69,7 @@ function Nav() {
         <div className="hidden lg:flex gap-5 items-center">
           {/* search bar */}
           <div className="md:w-83 hidden lg:flex">
-            <SearchBar
-              value={search ?? ""}
-              setValue={(val) => handleSearchChange(val)}
-            />
+            <SearchBar value={search ?? ""} setValue={setSearch} />
           </div>
           {/* notification bell */}
           <div className="cursor-pointer">
@@ -85,8 +77,11 @@ function Nav() {
           </div>
 
           {/* user profile  */}
-          <div className="border-4 border-orange-100 rounded-full size-12 bg-orange-50 cursor-pointer">
-            {/* <img src="" alt="" /> */}
+          <div className="border-4 border-orange-100 rounded-full size-12 bg-orange-50 cursor-pointer overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50&h=50&fit=crop&crop=face"
+              alt="user avatar"
+            />
           </div>
         </div>
 

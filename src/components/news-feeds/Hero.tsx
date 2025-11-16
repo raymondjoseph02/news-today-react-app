@@ -1,6 +1,6 @@
 import { useStore } from "@tanstack/react-store";
 import { useNavigate } from "react-router-dom";
-import { useState, useMemo, useCallback, memo } from "react";
+import { useState, useMemo, useCallback, memo, useEffect } from "react";
 import SearchBar from "../ui/SearchBar";
 import Tab from "../ui/Tab";
 import {
@@ -16,7 +16,7 @@ import type { ArticleProps, HeroProps } from "../../types/types";
 function Hero({ data, isLoading, error }: HeroProps) {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const [search, setSearch] = useState<string | null>(null);
   // Memoize static data to prevent re-creation
   const tabs = useMemo(
     () => [
@@ -31,7 +31,6 @@ function Hero({ data, isLoading, error }: HeroProps) {
   );
 
   const currentTab = useStore(activeTab);
-  const currentSearch = useStore(search);
 
   // Memoize callback functions to prevent re-renders
   const handleTabSelect = useCallback((tabName: string) => {
@@ -61,18 +60,19 @@ function Hero({ data, isLoading, error }: HeroProps) {
     [createSlug, navigate]
   );
 
-  // Memoize search handler to prevent re-renders
-  const handleSearchChange = useCallback((val: string) => {
-    handleSearch(val);
-  }, []);
+  useEffect(() => {
+    if (search) {
+      handleSearch(search);
+    }
+  }, [search]);
 
   return (
     <section className="bg-gray-50 pt-24 pb-10 sm:pt-28 sm:pb-16">
       <div className="container-wrapper space-y-12">
         <div className="space-y-9">
           <SearchBar
-            value={currentSearch ?? ""}
-            setValue={handleSearchChange}
+            value={search ?? ""}
+            setValue={setSearch}
             custom_class="!border-gray-100/20 !border"
             placeHolder="search for news, topics..."
           />
