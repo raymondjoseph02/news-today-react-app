@@ -129,12 +129,9 @@ export async function getCachedNews(
 
 export const testEndpoint = async () => {
   try {
-    const res = await axios.get("http://api.mediastack.com/v1/news", {
-      params: {
-        access_key: "5087d43f026b434f91b2c65c0906ba2b",
-        languages: "en",
-      },
-    });
+    const res = await axios.get(
+      "https://newsdata.io/api/1/latest?apikey=pub_cf652e0a3bfe4992b3a11af81553b7eb&country=au,us"
+    );
     console.log(res);
   } catch (error) {
     console.log(error);
