@@ -1,4 +1,3 @@
-// src/pages/NewsDetail.tsx
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import { Archive, Heart, MessageSquare, Share2 } from "lucide-react";
@@ -199,6 +198,7 @@ function NewsDetail() {
                     publishedAt={relatedArticle.publishedAt}
                     title={relatedArticle.title}
                     url={relatedArticle.url}
+                    id={relatedArticle.id}
                   />
                 ))
               ) : (

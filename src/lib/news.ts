@@ -73,39 +73,14 @@ export async function fetchNews(params: NewsParams = {}): Promise<DataProps> {
   }
 
   try {
-    // SECURITY: Try header-based authentication first (keeps API key out of URL)
-    // This approach is more secure as headers are not logged in browser history
+    //  header-based authentication (keeps API key out of URL)
     const response = await fetch(url, {
       headers: {
         "User-Agent": "NewsToday/1.0",
-        "X-ACCESS-KEY": API_KEY, // Try custom header first
-        Authorization: `Bearer ${API_KEY}`, // Alternative header method
+        "X-ACCESS-KEY": API_KEY,
+        Authorization: `Bearer ${API_KEY}`,
       },
     });
-
-    // If header authentication fails, fall back to URL parameter method
-    // NOTE: This exposes the API key in the URL which is less secure
-    if (!response.ok && (response.status === 401 || response.status === 403)) {
-      console.warn(
-        "Header authentication failed, trying URL parameter method..."
-      );
-      const fallbackUrl = url.includes("?")
-        ? `${url}&apikey=${API_KEY}`
-        : `${url}?apikey=${API_KEY}`;
-
-      const fallbackResponse = await fetch(fallbackUrl, {
-        headers: {
-          "User-Agent": "NewsToday/1.0",
-        },
-      });
-
-      if (!fallbackResponse.ok) {
-        throw new Error(`HTTP error! status: ${fallbackResponse.status}`);
-      }
-
-      const data = await fallbackResponse.json();
-      return processApiResponse(data);
-    }
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -148,40 +123,7 @@ function processApiResponse(data: any): DataProps {
   };
 }
 
-// Utility function to get cached or fresh news data
-export async function getNewsData(params: NewsParams = {}) {
-  try {
-    return await fetchNews(params);
-  } catch {
-    // Return empty data structure on error
-    return {
-      status: "error",
-      totalResults: 0,
-      articles: [],
-    } as DataProps;
-  }
-}
-
-// Cache implementation for React (optional)
-const cache = new Map<string, { data: DataProps; timestamp: number }>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
-export async function getCachedNews(
-  params: NewsParams = {}
-): Promise<DataProps> {
-  const cacheKey = JSON.stringify(params);
-  const cached = cache.get(cacheKey);
-
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    return cached.data;
-  }
-
-  const data = await fetchNews(params);
-  cache.set(cacheKey, { data, timestamp: Date.now() });
-  return data;
-}
-
-// Dedicated function to fetch a single article by ID
+// function to fetch a single article by ID
 export async function fetchArticleById(articleId: string): Promise<DataProps> {
   return fetchNews({ id: articleId });
 }

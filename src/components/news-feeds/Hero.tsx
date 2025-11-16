@@ -1,4 +1,3 @@
-// src/components/news-feeds/Hero.tsx
 import { useStore } from "@tanstack/react-store";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo, useCallback, memo } from "react";
@@ -22,9 +21,9 @@ function Hero({ data, isLoading, error }: HeroProps) {
   const tabs = useMemo(
     () => [
       { name: "All", abbreviation: "all" },
-      { name: "Top", abbreviation: "top stories" },
-      { name: "World", abbreviation: "world" },
-      { name: "Politics", abbreviation: "politics" },
+      { name: "entertainment", abbreviation: "top stories" },
+      { name: "science", abbreviation: "world" },
+      { name: "health", abbreviation: "politics" },
       { name: "Business", abbreviation: "business" },
       { name: "Tech", abbreviation: "technology" },
     ],
@@ -33,7 +32,6 @@ function Hero({ data, isLoading, error }: HeroProps) {
 
   const currentTab = useStore(activeTab);
   const currentSearch = useStore(search);
-
 
   // Memoize callback functions to prevent re-renders
   const handleTabSelect = useCallback((tabName: string) => {
@@ -49,15 +47,13 @@ function Hero({ data, isLoading, error }: HeroProps) {
     return tab ? tab.name : "All";
   }, [tabs, currentTab]);
 
-  // Use article ID directly (no need to create slug from title)
   const createSlug = useCallback((id: string) => {
-    return id; // NewsData.io articles have unique IDs
+    return id;
   }, []);
-
 
   const handleHeroNavigate = useCallback(
     (item: ArticleProps) => {
-      const articleId = createSlug(item.id); // Use article ID instead of title
+      const articleId = createSlug(item.id); // Use article ID
 
       // Navigate directly to the article page using the article ID
       navigate(`/news/${articleId}`);
@@ -156,7 +152,7 @@ function Hero({ data, isLoading, error }: HeroProps) {
               <p className="text-2xl font-semibold text-gray-800">
                 Failed to load news 😕
               </p>
-              <p className="text-gray-500">{error}</p>
+              <p className="text-gray-500">something went wrong!</p>
             </div>
           ) : data?.articles?.length ? (
             data.articles.slice(0, 1).map((item) => (

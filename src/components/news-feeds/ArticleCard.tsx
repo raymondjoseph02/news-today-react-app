@@ -16,16 +16,10 @@ function ArticleCard({
 }: CardProps) {
   const navigate = useNavigate();
 
-  // Create URL-safe slug from title
-  const createSlug = (id: string) => {
-    return id;
-  };
-
   const handleNavigate = () => {
-    const slug = createSlug(id);
 
     // Navigate directly to the article page
-    navigate(`/news/${slug}`);
+    navigate(`/news/${id}`);
   };
 
   return (

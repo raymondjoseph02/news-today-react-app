@@ -1,5 +1,3 @@
-"use client";
-
 import ArticleCard from "./ArticleCard";
 import ArticleSkeleton from "../ui/skeleton/ArticleSkeleton";
 import type { RecentArticlesProps, ArticleProps } from "../../types/types";

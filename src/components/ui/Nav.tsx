@@ -1,27 +1,39 @@
-// src/components/ui/Nav.tsx
-import { Bell } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import SearchBar from './SearchBar';
-import { links } from '../../constants/constants';
+import { Bell } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import SearchBar from "./SearchBar";
+import { links } from "../../constants/constants";
+import { fetchNews } from "../../lib/news";
 
 function Nav() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [search, setSearch] = useState<string | null>(null);
 
+  // Search handler
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
+    if (search) {
+      fetchNews({
+        search: search,
+      });
+    }
+  };
+
+  // Toggle mobile menu
   const handleToggleMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+    setIsMobileMenuOpen((prev) => !prev);
   };
 
   // Disable body scroll when menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isMobileMenuOpen]);
 
@@ -48,7 +60,7 @@ function Nav() {
                 {links.map((link) => (
                   <li
                     key={link.path}
-                    className="text-gray-100 capitalize hover:text-gray-100/80 transition-colors ease-in-out duration-300 text-lg font-medium"
+                    className="text-gray-100 capitalize hover:text-blue-300/80 transition-colors ease-in-out duration-300 text-lg font-medium"
                   >
                     <Link to={link.path}>{link.name}</Link>
                   </li>
@@ -62,7 +74,10 @@ function Nav() {
         <div className="hidden lg:flex gap-5 items-center">
           {/* search bar */}
           <div className="md:w-83 hidden lg:flex">
-            <SearchBar />
+            <SearchBar
+              value={search ?? ""}
+              setValue={(val) => handleSearchChange(val)}
+            />
           </div>
           {/* notification bell */}
           <div className="cursor-pointer">
@@ -112,7 +127,7 @@ function Nav() {
         {/* MOBILE MENU PANEL */}
         <div
           className={`lg:hidden fixed top-0 left-0 h-full w-full bg-white px-6 z-40 transform transition-transform duration-300
-          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
         `}
         >
           <div className="space-y-8 h-full flex-col flex justify-between pb-6">

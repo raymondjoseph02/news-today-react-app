@@ -1,5 +1,3 @@
-// src/types/index.ts
-
 export interface ArticleSource {
   id: string | null;
   name: string;

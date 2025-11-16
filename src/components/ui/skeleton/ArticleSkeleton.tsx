@@ -1,6 +1,6 @@
 function ArticleSkeleton() {
   return (
-    <div className="space-y-6 group animate-pulse">
+    <div className="space-y-6 group animate-pulse w-full h-80 sm:h-151">
       {/* Image placeholder */}
       <div className="rounded-lg w-full max-h-60 h-60 bg-gray-300 overflow-hidden" />
 

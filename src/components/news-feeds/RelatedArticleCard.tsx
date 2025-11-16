@@ -6,38 +6,19 @@ interface RelatedArticleCardProps {
   thumbNail: string;
   publishedAt?: string;
   url?: string;
+  id: string;
 }
 function RelatedArticleCard({
   title,
   description,
   category,
   thumbNail,
-  publishedAt,
-  url,
+  id,
 }: RelatedArticleCardProps) {
   const navigate = useNavigate();
 
-  const createSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-  };
-
   const handleNavigate = () => {
-    const slug = createSlug(title);
-
-    const articleData = {
-      title,
-      description,
-      urlToImage: thumbNail,
-      publishedAt: publishedAt || new Date().toISOString(),
-      url: url || "",
-      category: category,
-    };
-
-    sessionStorage.setItem(`article-${slug}`, JSON.stringify(articleData));
-    navigate(`/news/${slug}`);
+    navigate(`/news/${id}`);
   };
 
   return (
