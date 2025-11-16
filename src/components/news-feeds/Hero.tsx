@@ -1,7 +1,7 @@
 // src/components/news-feeds/Hero.tsx
 import { useStore } from "@tanstack/react-store";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import SearchBar from "../ui/SearchBar";
 import Tab from "../ui/Tab";
 import {
@@ -13,76 +13,105 @@ import {
 } from "../../store";
 import ArticleSkeleton from "../ui/skeleton/ArticleSkeleton";
 import type { ArticleProps, HeroProps } from "../../types/types";
+import { testEndpoint } from "../../lib/news";
 
 function Hero({ data, isLoading, error }: HeroProps) {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const tabs = [
-    { name: "All", abbreviation: "all" },
-    { name: "Top", abbreviation: "top stories" },
-    { name: "World", abbreviation: "world" },
-    { name: "Politics", abbreviation: "politics" },
-    { name: "Business", abbreviation: "business" },
-    { name: "Tech", abbreviation: "technology" },
-  ];
+  // Memoize static data to prevent re-creation
+  const tabs = useMemo(
+    () => [
+      { name: "All", abbreviation: "all" },
+      { name: "Top", abbreviation: "top stories" },
+      { name: "World", abbreviation: "world" },
+      { name: "Politics", abbreviation: "politics" },
+      { name: "Business", abbreviation: "business" },
+      { name: "Tech", abbreviation: "technology" },
+    ],
+    []
+  );
+
+  testEndpoint();
 
   const currentTab = useStore(activeTab);
   const currentSearch = useStore(search);
 
-  const handleTabSelect = (tabName: string) => {
-    resetSearch();
-    updateActiveTab(tabName);
-    setIsDropdownOpen(false);
-  };
-
-  const getCurrentTabDisplayName = () => {
-    const tab = tabs.find(t => t.name.toLowerCase() === currentTab.toLowerCase());
-    return tab ? tab.name : "All";
-  };
-
-  // Create URL-safe slug from title
-  const createSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-  };
-
-  // Map tab names to valid API categories
-  const mapTabToCategory = (tabName: string) => {
-    const mapping: { [key: string]: string } = {
+  // Memoize mapping object to prevent re-creation
+  const tabToCategoryMapping = useMemo(
+    () => ({
       all: "general",
       top: "top stories",
       world: "world",
       politics: "politics",
       business: "business",
       tech: "technology",
-    };
-    return mapping[tabName.toLowerCase()] || "general";
-  };
+    }),
+    []
+  );
 
-  const handleHeroNavigate = (item: ArticleProps) => {
-    const slug = createSlug(item.title);
+  // Memoize callback functions to prevent re-renders
+  const handleTabSelect = useCallback((tabName: string) => {
+    resetSearch();
+    updateActiveTab(tabName);
+    setIsDropdownOpen(false);
+  }, []);
 
-    // Store article data in sessionStorage with current category
-    const articleData = {
-      title: item.title,
-      description: item.description,
-      urlToImage: item.urlToImage,
-      publishedAt: item.publishedAt,
-      url: item.url,
-      category: mapTabToCategory(currentTab),
-      author: item.author,
-      content: item.content,
-      source: item.source,
-    };
+  const getCurrentTabDisplayName = useMemo(() => {
+    const tab = tabs.find(
+      (t) => t.name.toLowerCase() === currentTab.toLowerCase()
+    );
+    return tab ? tab.name : "All";
+  }, [tabs, currentTab]);
 
-    sessionStorage.setItem(`article-${slug}`, JSON.stringify(articleData));
+  // Memoize utility functions
+  const createSlug = useCallback((title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+  }, []);
 
-    // Navigate to the article page
-    navigate(`/news/${slug}`);
-  };
+  const mapTabToCategory = useCallback(
+    (tabName: string) => {
+      return (
+        tabToCategoryMapping[
+          tabName.toLowerCase() as keyof typeof tabToCategoryMapping
+        ] || "general"
+      );
+    },
+    [tabToCategoryMapping]
+  );
+
+  const handleHeroNavigate = useCallback(
+    (item: ArticleProps) => {
+      const slug = createSlug(item.title);
+
+      // Store article data in sessionStorage with current category
+      const articleData = {
+        title: item.title,
+        description: item.description,
+        urlToImage: item.urlToImage,
+        publishedAt: item.publishedAt,
+        url: item.url,
+        category: mapTabToCategory(currentTab),
+        author: item.author,
+        content: item.content,
+        source: item.source,
+      };
+
+      sessionStorage.setItem(`article-${slug}`, JSON.stringify(articleData));
+
+      // Navigate to the article page
+      navigate(`/news/${slug}`);
+    },
+    [createSlug, mapTabToCategory, currentTab, navigate]
+  );
+
+  // Memoize search handler to prevent re-renders
+  const handleSearchChange = useCallback((val: string) => {
+    handleSearch(val);
+  }, []);
 
   return (
     <section className="bg-gray-50 pt-24 pb-10 sm:pt-28 sm:pb-16">
@@ -90,11 +119,11 @@ function Hero({ data, isLoading, error }: HeroProps) {
         <div className="space-y-9">
           <SearchBar
             value={currentSearch ?? ""}
-            setValue={(val) => handleSearch(val)}
+            setValue={handleSearchChange}
             custom_class="!border-gray-100/20 !border"
             placeHolder="search for news, topics..."
           />
-          
+
           {/* Desktop Tabs */}
           <div className="hidden sm:flex">
             <Tab
@@ -110,16 +139,23 @@ function Hero({ data, isLoading, error }: HeroProps) {
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
             >
-              <span className="text-gray-700 font-medium">{getCurrentTabDisplayName()}</span>
+              <span className="text-gray-700 font-medium">
+                {getCurrentTabDisplayName}
+              </span>
               <svg
                 className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
-                  isDropdownOpen ? 'rotate-180' : ''
+                  isDropdownOpen ? "rotate-180" : ""
                 }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
@@ -131,8 +167,8 @@ function Hero({ data, isLoading, error }: HeroProps) {
                     onClick={() => handleTabSelect(tab.name)}
                     className={`w-full text-left px-4 py-3 hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg transition-colors duration-150 ${
                       currentTab.toLowerCase() === tab.name.toLowerCase()
-                        ? 'bg-blue-50 text-blue-600 font-medium'
-                        : 'text-gray-700'
+                        ? "bg-blue-50 text-blue-600 font-medium"
+                        : "text-gray-700"
                     }`}
                   >
                     {tab.name}
@@ -206,4 +242,4 @@ function Hero({ data, isLoading, error }: HeroProps) {
   );
 }
 
-export default Hero;
+export default memo(Hero);

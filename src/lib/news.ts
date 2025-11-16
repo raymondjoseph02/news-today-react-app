@@ -1,4 +1,5 @@
 // src/lib/news.ts
+import axios from "axios";
 import { type DataProps } from "../types/types";
 
 export interface NewsParams {
@@ -125,3 +126,17 @@ export async function getCachedNews(
   cache.set(cacheKey, { data, timestamp: Date.now() });
   return data;
 }
+
+export const testEndpoint = async () => {
+  try {
+    const res = await axios.get("http://api.mediastack.com/v1/news", {
+      params: {
+        access_key: "5087d43f026b434f91b2c65c0906ba2b",
+        languages: "en",
+      },
+    });
+    console.log(res);
+  } catch (error) {
+    console.log(error);
+  }
+};

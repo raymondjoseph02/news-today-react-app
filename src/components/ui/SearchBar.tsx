@@ -1,5 +1,7 @@
 "use client";
 import { Search } from "lucide-react";
+import { memo } from "react";
+
 interface SearchProps {
   placeHolder?: string;
   value?: string;
@@ -7,6 +9,7 @@ interface SearchProps {
   bg_color?: string;
   custom_class?: string;
 }
+
 function SearchBar({
   placeHolder,
   value,
@@ -34,4 +37,4 @@ function SearchBar({
   );
 }
 
-export default SearchBar;
+export default memo(SearchBar);

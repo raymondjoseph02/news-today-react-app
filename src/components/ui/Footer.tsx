@@ -25,7 +25,7 @@ function Footer() {
         <ul className="flex items-center sm:gap-4 gap-3 flex-wrap lg:gap-6 justify-center">
           {links.map((link) => (
             <li
-              className="capitalize text-gray-500 text-lg font-medium hover:text-gray-400 transition ease-in-out duration-300"
+              className="capitalize text-gray-500 sm:text-lg font-medium hover:text-gray-400 transition text-sm ease-in-out duration-300"
               key={link.path}
             >
               <Link to={link.path}>{link.name}</Link>

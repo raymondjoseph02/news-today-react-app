@@ -42,7 +42,7 @@ function RelatedArticleCard({
 
   return (
     <div className="cursor-pointer" onClick={handleNavigate}>
-      <div className="flex gap-4 mb-2">
+      <div className="flex gap-4 mb-2 flex-col sm:flex-row">
         <div className="flex-1">
           <div className="mb-2">
             <p className="text-sm text-blue-300 font-medium capitalize mb-1">
@@ -52,7 +52,7 @@ function RelatedArticleCard({
           </div>
           <p className="text-sm text-gray-600 line-clamp-2">{description}</p>
         </div>
-        <div className="w-36 h-33">
+        <div className="w-full sm:w-36 h-33">
           <img
             src={thumbNail || "/images/placeholder.jpg"}
             alt={title}

@@ -1,13 +1,17 @@
 import { motion } from "framer-motion";
+import { memo } from "react";
+
 type Tab = {
   name: string;
   abbreviation: string;
 };
+
 export interface TabsProps {
   tabs: Tab[];
   activeTab: string;
   SetActiveTab: (tab: string) => void;
 }
+
 function Tab({ tabs, activeTab, SetActiveTab }: TabsProps) {
   return (
     <ul className="flex items-center gap-2">
@@ -37,4 +41,4 @@ function Tab({ tabs, activeTab, SetActiveTab }: TabsProps) {
   );
 }
 
-export default Tab;
+export default memo(Tab);
