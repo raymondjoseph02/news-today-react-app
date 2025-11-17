@@ -75,4 +75,52 @@ src/
 - 🎨 Smooth animations and micro-interactions
 - 🔒 Secure API key management
 
-TODO: 1 . add setup. 2. to add link.
+## Setup
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone <(https://github.com/raymondjoseph02/news-today-react-app.git)>
+cd news-todday
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Create environment file:
+
+```bash
+cp .env.example .env
+```
+
+4. Add your NewsData.io API key to `.env`:
+
+```
+VITE_NEWS_API_KEY=your_api_key_here
+```
+
+5. Start the development server:
+
+```bash
+npm run dev
+```
+
+6. Open [http://localhost:5173](http://localhost:5173) in your browser
+
+### Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npm run type-check` - Run TypeScript compiler check
