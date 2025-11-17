@@ -1,4 +1,3 @@
-// src/hooks/useNews.ts
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useStore } from "@tanstack/react-store";
 import { activeTab, search } from "../store/index";
@@ -6,7 +5,7 @@ import { debounce } from "../utils/debounce";
 import { fetchNews, type NewsParams } from "../lib/news";
 import { type DataProps } from "../types/types";
 
-// Hook for client-side news fetching
+// Hook for news fetching
 export function useNews(initialData?: DataProps | null) {
   const [data, setData] = useState<DataProps | null>(initialData || null);
   const [isLoading, setIsLoading] = useState(!initialData);

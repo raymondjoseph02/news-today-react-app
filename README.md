@@ -74,3 +74,5 @@ src/
 - ⚡ Fast loading with skeleton states
 - 🎨 Smooth animations and micro-interactions
 - 🔒 Secure API key management
+
+TODO: 1 . add setup. 2. to add link.

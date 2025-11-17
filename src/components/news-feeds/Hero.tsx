@@ -193,5 +193,4 @@ function Hero({ data, isLoading, error }: HeroProps) {
     </section>
   );
 }
-
 export default memo(Hero);
