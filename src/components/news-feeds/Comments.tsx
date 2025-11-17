@@ -47,7 +47,6 @@ function Comments({ articleId }: CommentsProps) {
   const [comments, setComments] = useState<Comment[]>(mockComments);
   const [newComment, setNewComment] = useState("");
 
-  // In a real app, you would use articleId to fetch comments for specific articles
   console.log("Loading comments for article:", articleId);
 
   const handleSubmitComment = () => {
@@ -56,7 +55,7 @@ function Comments({ articleId }: CommentsProps) {
     const comment: Comment = {
       id: Date.now().toString(),
       author: {
-        name: "You", // In a real app, this would come from auth
+        name: "You", 
         avatar:
           "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50&h=50&fit=crop&crop=face",
       },

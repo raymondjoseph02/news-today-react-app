@@ -1,5 +1,3 @@
-// src/pages/Home.tsx
-// import { Helmet } from 'react-helmet-async';
 import Hero from "../components/news-feeds/Hero";
 import RecentArticles from "../components/news-feeds/RecentArticles";
 import { useNews } from "../hooks/useNews";

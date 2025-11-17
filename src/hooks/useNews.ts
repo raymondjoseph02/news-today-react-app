@@ -28,7 +28,7 @@ export function useNews(initialData?: DataProps | null) {
     return mapping[tabName] || "general";
   };
 
-  const category = mapTabToCategory(currentTab || 'All');
+  const category = mapTabToCategory(currentTab || "All");
 
   const fetchNewsData = useCallback(async (params: NewsParams) => {
     try {
@@ -74,15 +74,5 @@ export function useNews(initialData?: DataProps | null) {
     isLoading,
     error,
     refetch,
-  };
-}
-
-// Hook for static data (if needed for SSG-like behavior)
-export function useNewsStatic(initialData: DataProps) {
-  return {
-    data: initialData,
-    isLoading: false,
-    error: null,
-    refetch: () => {},
   };
 }

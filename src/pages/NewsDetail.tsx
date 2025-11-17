@@ -19,7 +19,7 @@ function NewsDetail() {
   const fetchRelatedArticles = useCallback(
     async (category: string, currentArticleTitle: string) => {
       try {
-        // Ensure we're using a valid API category
+        // Ensure using a valid API category
         const validCategories = [
           "business",
           "entertainment",
@@ -57,7 +57,7 @@ function NewsDetail() {
     setError(null);
 
     try {
-      // Fetch article directly by ID from NewsData.io
+      // Fetch article directly by ID
       console.log("Fetching article by ID:", slug);
       const articleResponse = await fetchArticleById(slug);
 

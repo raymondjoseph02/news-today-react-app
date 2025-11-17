@@ -4,13 +4,10 @@ export interface NewsParams {
   category?: string;
   search?: string;
   pageSize?: number;
-  id?: string; // For fetching specific articles by ID
+  id?: string;
 }
 
-// WARNING: Client-side API keys are still visible to users in browser dev tools
-// For production applications, implement a backend proxy to keep API keys secure
-const API_KEY = import.meta.env.VITE_NEWS_API_KEY; // For Vite
-// const API_KEY = process.env.REACT_APP_NEWS_API_KEY; // For CRA
+const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
 
 export async function fetchNews(params: NewsParams = {}): Promise<DataProps> {
   const { category = "general", search = "", pageSize = 10, id } = params;
@@ -24,7 +21,7 @@ export async function fetchNews(params: NewsParams = {}): Promise<DataProps> {
   let url: string;
   const baseUrl = "https://newsdata.io/api/1/latest";
 
-  // Start with base URL (no API key in URL for security)
+  // base URL (no API key in URL for security)
   url = baseUrl + "?";
 
   // If fetching by ID, only use the ID parameter
@@ -101,7 +98,7 @@ function processApiResponse(data: any): DataProps {
     throw new Error(data.message || "NewsData API error");
   }
 
-  // Transform NewsData.io API response to match our data structure
+  // Transform api response to match  data structure
   return {
     status: data.status,
     totalResults: data.totalResults || 0,
